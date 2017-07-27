@@ -4206,11 +4206,6 @@ public class CaptureModule implements CameraModule, PhotoController,
     }
 
     @Override
-    public void onShowSwitcherPopup() {
-
-    }
-
-    @Override
     public void onMediaSaveServiceConnected(MediaSaveService s) {
         if (mFirstTimeInitialized) {
             s.setListener(this);
@@ -6721,11 +6716,10 @@ public class CaptureModule implements CameraModule, PhotoController,
         int width = p.x;
         int height = p.y;
         if (width * mCropRegion[id].width() != height * mCropRegion[id].height()) {
-            Point displayPoint = mUI.getDisplaySize();
-            if (width >= displayPoint.x) {
+            if (width >= mUI.getScreenX()) {
                 height = width * mCropRegion[id].width() / mCropRegion[id].height();
             }
-            if (height >= displayPoint.y) {
+            if (height >= mUI.getScreenY()) {
                 width = height * mCropRegion[id].height() / mCropRegion[id].width();
             }
         }
