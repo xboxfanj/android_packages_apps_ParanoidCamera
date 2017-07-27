@@ -24,16 +24,18 @@
  layout. -->
 
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="center">
+
     <include layout="@layout/selfie_flash_view" />
+
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/mdp_preivew_frame"
         android:layout_gravity="center_vertical|center_horizontal">
+
         <com.android.camera.ui.AutoFitSurfaceView
             android:id="@+id/mdp_preview_content"
             android:layout_width="match_parent"
@@ -67,6 +69,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:visibility="gone"/>
+
         <com.android.camera.Camera2GraphView
             android:id="@+id/graph_view_r"
             android:visibility="gone"
@@ -74,6 +77,7 @@
             android:layout_height="100dip"
             android:layout_marginTop="520dip"
             android:layout_marginLeft="10dip" />
+
         <com.android.camera.Camera2GraphView
             android:id="@+id/graph_view_gb"
             android:visibility="gone"
@@ -81,6 +85,7 @@
             android:layout_height="100dip"
             android:layout_marginTop="520dip"
             android:layout_marginLeft="120dip" />
+
         <com.android.camera.Camera2GraphView
             android:id="@+id/graph_view_b"
             android:visibility="gone"
@@ -166,10 +171,10 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
         <com.android.camera.ui.RotateLayout
             android:id="@+id/recording_time_rect"
             android:layout_width="match_parent"
@@ -179,6 +184,7 @@
             android:visibility="gone"
             android:layout_marginLeft="24dp"
             android:layout_marginTop="80dp">
+
             <include
                 android:id="@+id/labels"
                 layout="@layout/viewfinder_labels_video"/>
@@ -212,13 +218,7 @@
     </LinearLayout>
 
     <include
-        style="@style/CameraControls"
         layout="@layout/one_ui_layout"
-        android:layout_gravity="center" />
-
-    <include
-        style="@style/CameraControls"
-        layout="@layout/menu_help"
         android:layout_gravity="center" />
 
     <FrameLayout
@@ -243,8 +243,8 @@
             android:layout_gravity="center" />
 
         <com.android.camera.ui.RotatableLayout
-            xmlns:android="http://schemas.android.com/apk/res/android"
-            style="@style/CameraControls"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:layout_gravity="bottom|center_horizontal"
             android:layout_marginBottom="2dip">
             <com.android.camera.ui.RotateImageView android:id="@+id/done_button"
