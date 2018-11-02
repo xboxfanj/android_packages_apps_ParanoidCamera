@@ -3561,7 +3561,11 @@ public class CaptureModule implements CameraModule, PhotoController,
 
     @Override
     public void onPauseAfterSuper() {
-        Log.d(TAG, "onPause");
+        onPauseAfterSuper(true);
+    }
+
+    private void onPauseAfterSuper(boolean isExitCamera) {
+        Log.d(TAG, "onPause " + (isExitCamera ? "exit camera" : ""));
         if (mLocationManager != null) mLocationManager.recordLocation(false);
         if(isClearSightOn()) {
             ClearSightImageProcessor.getInstance().close();
@@ -3579,7 +3583,9 @@ public class CaptureModule implements CameraModule, PhotoController,
         mUI.hideSurfaceView();
         mZoomValue = 1f;
         mFirstPreviewLoaded = false;
-        stopBackgroundThread();
+        if (isExitCamera) {
+            stopBackgroundThread();
+        }
         mLastJpegData = null;
         setProModeVisible();
         mJpegImageData = null;
@@ -3787,7 +3793,12 @@ public class CaptureModule implements CameraModule, PhotoController,
 
     @Override
     public void onResumeAfterSuper() {
-        Log.d(TAG, "onResume " + (mCurrentSceneMode != null ? mCurrentSceneMode.mode : "null"));
+        onResumeAfterSuper(false);
+    }
+
+    private void onResumeAfterSuper(boolean resumeFromRestartAll) {
+        Log.d(TAG, "onResume " + (mCurrentSceneMode != null ? mCurrentSceneMode.mode : "null")
+        + (resumeFromRestartAll ? " isResumeFromRestartAll" : ""));
         reinit();
         mDeepPortraitMode = isDeepPortraitMode();
         initializeValues();
@@ -3800,7 +3811,9 @@ public class CaptureModule implements CameraModule, PhotoController,
 
         updateSaveStorageState();
         setDisplayOrientation();
-        startBackgroundThread();
+        if (!resumeFromRestartAll) {
+            startBackgroundThread();
+        }
         openProcessors();
         loadSoundPoolResource();
         Message msg = Message.obtain();
@@ -7087,9 +7100,9 @@ public class CaptureModule implements CameraModule, PhotoController,
         Log.d(TAG, "restart all");
         reinit();
         onPauseBeforeSuper();
-        onPauseAfterSuper();
+        onPauseAfterSuper(false);
         onResumeBeforeSuper();
-        onResumeAfterSuper();
+        onResumeAfterSuper(true);
         setRefocusLastTaken(false);
     }
 
