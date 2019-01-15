@@ -231,6 +231,8 @@ public class SettingsManager implements ListMenu.SettingsListener {
     private boolean mIsMonoCameraPresent = false;
     private boolean mIsFrontCameraPresent = false;
     private boolean mHasMultiCamera = false;
+    private boolean mIsHFRSupported = false;
+    private int mHighestSpeedVideoRate = 30;
     private JSONObject mDependency;
     private int mCameraId;
     private Set<String> mFilteredKeys;
@@ -1401,11 +1403,20 @@ public class SettingsManager implements ListMenu.SettingsListener {
         ListPreference hfrPref = mPreferenceGroup.findPreference(KEY_VIDEO_HIGH_FRAME_RATE);
         if (hfrPref != null) {
             hfrPref.reloadInitialEntriesAndEntryValues();
-            if (filterUnsupportedOptions(hfrPref,
-                    getSupportedHighFrameRate())) {
+            mIsHFRSupported = !filterUnsupportedOptions(hfrPref,
+                    getSupportedHighFrameRate());
+            if (!mIsHFRSupported) {
                 mFilteredKeys.add(hfrPref.getKey());
             }
         }
+    }
+
+    public boolean isHFRSupported() {
+        return mIsHFRSupported;
+    }
+
+    public void setHFRDefaultRate() {
+        setValue(KEY_VIDEO_HIGH_FRAME_RATE, "hfr" + String.valueOf(mHighestSpeedVideoRate));
     }
 
     private void filterVideoEncoderProfileOptions() {
@@ -1572,6 +1583,7 @@ public class SettingsManager implements ListMenu.SettingsListener {
                 if (findVideoEncoder) break;
             }
 
+            String rate = "";
             try {
                 Range[] range = getSupportedHighSpeedVideoFPSRange(mCameraId, videoSize);
                 for (Range r : range) {
@@ -1581,8 +1593,11 @@ public class SettingsManager implements ListMenu.SettingsListener {
                         if (videoCapabilities != null) {
                             if (videoCapabilities.areSizeAndRateSupported(
                                     videoSize.getWidth(), videoSize.getHeight(), (int) r.getUpper())) {
-                                supported.add("hfr" + String.valueOf(r.getUpper()));
-                                supported.add("hsr" + String.valueOf(r.getUpper()));
+                                rate = String.valueOf(r.getUpper());
+                                supported.add("hfr" + rate);
+                                supported.add("hsr" + rate);
+                                mHighestSpeedVideoRate = Integer.valueOf(rate) > mHighestSpeedVideoRate ?
+                                        Integer.valueOf(rate) : mHighestSpeedVideoRate;
                             }
                         }
                     }
@@ -1601,6 +1616,8 @@ public class SettingsManager implements ListMenu.SettingsListener {
                                     videoSize.getWidth(), videoSize.getHeight(), mExtendedHFRSize[i + 2])) {
                                 supported.add(item);
                                 supported.add("hsr" + mExtendedHFRSize[i + 2]);
+                                mHighestSpeedVideoRate = mExtendedHFRSize[i + 2] > mHighestSpeedVideoRate ?
+                                        mExtendedHFRSize[i + 2] : mHighestSpeedVideoRate;
                             }
                         }
                     }

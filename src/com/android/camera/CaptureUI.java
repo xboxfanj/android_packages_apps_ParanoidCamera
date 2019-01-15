@@ -986,6 +986,7 @@ public class CaptureUI implements FocusOverlayManager.FocusUI,
     private boolean isSupportFrontCamera(CaptureModule.CameraMode mode) {
         switch (mode) {
             case VIDEO:
+            case HFR:
             case DEFAULT:
                 return true;
             default:
@@ -995,7 +996,8 @@ public class CaptureUI implements FocusOverlayManager.FocusUI,
 
     public void initFlashButton() {
         mFlashButton.init(mModule.getCurrenCameraMode() == CaptureModule.CameraMode.VIDEO ||
-                mModule.getCurrenCameraMode() == CaptureModule.CameraMode.PRO_MODE);
+                mModule.getCurrenCameraMode() == CaptureModule.CameraMode.PRO_MODE ||
+                mModule.getCurrenCameraMode() == CaptureModule.CameraMode.HFR);
         enableView(mFlashButton, SettingsManager.KEY_FLASH_MODE);
     }
 
@@ -1283,6 +1285,7 @@ public class CaptureUI implements FocusOverlayManager.FocusUI,
                 mPauseButton.setVisibility(View.INVISIBLE);
                 break;
             case VIDEO:
+            case HFR:
                 mVideoButton.setVisibility(View.VISIBLE);
                 mShutterButton.setVisibility(View.INVISIBLE);
                 mFilterModeSwitcher.setVisibility(View.INVISIBLE);
@@ -2288,6 +2291,7 @@ public class CaptureUI implements FocusOverlayManager.FocusUI,
         int mode = index % modeListSize;
         mModule.setCameraModeSwitcherAllowed(false);
         mCameraModeAdapter.setSelectedPosition(mode);
+        mModeSelectLayout.smoothScrollToPosition(mode);
         mModule.selectCameraMode(mode);
     }
 
@@ -2301,6 +2305,7 @@ public class CaptureUI implements FocusOverlayManager.FocusUI,
             }
         }
         mCameraModeAdapter.setSelectedPosition(photoModeIndex);
+        mModeSelectLayout.smoothScrollToPosition(photoModeIndex);
         mModule.selectCameraMode(photoModeIndex);
     }
 

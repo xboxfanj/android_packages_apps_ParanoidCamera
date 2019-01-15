@@ -760,6 +760,7 @@ public class SettingsActivity extends PreferenceActivity {
                 }
                 break;
             case VIDEO:
+            case HFR:
                 removePreferenceGroup("photo", parentPre);
                 if (mDeveloperMenuEnabled) {
                     ArrayList<String> videoAddList = new ArrayList<>();
