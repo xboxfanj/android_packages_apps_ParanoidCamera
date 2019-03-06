@@ -862,7 +862,6 @@ public class CaptureUI implements FocusOverlayManager.FocusUI,
         mCameraControls.setProMode(promode);
         if (promode) {
             mVideoButton.setVisibility(View.INVISIBLE);
-            mFlashButton.setVisibility(View.INVISIBLE);
         } else if (mModule.getCurrentIntentMode() == CaptureModule.INTENT_MODE_NORMAL &&
                 mModule.getCurrenCameraMode() == CaptureModule.CameraMode.VIDEO) {
             mVideoButton.setVisibility(View.VISIBLE);
@@ -995,7 +994,8 @@ public class CaptureUI implements FocusOverlayManager.FocusUI,
     }
 
     public void initFlashButton() {
-        mFlashButton.init(mModule.getCurrenCameraMode() == CaptureModule.CameraMode.VIDEO);
+        mFlashButton.init(mModule.getCurrenCameraMode() == CaptureModule.CameraMode.VIDEO ||
+                mModule.getCurrenCameraMode() == CaptureModule.CameraMode.PRO_MODE);
         enableView(mFlashButton, SettingsManager.KEY_FLASH_MODE);
     }
 
