@@ -62,6 +62,7 @@ import android.widget.CheckBox;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -131,6 +132,7 @@ public class CaptureUI implements FocusOverlayManager.FocusUI,
     private Point mDisplaySize = new Point();
     private SelfieFlashView mSelfieView;
     private float mScreenBrightness = 0.0f;
+    private ProgressBar mProgressBar;
 
     private SurfaceHolder.Callback callbackMono = new SurfaceHolder.Callback() {
         // SurfaceHolder callbacks
@@ -339,6 +341,7 @@ public class CaptureUI implements FocusOverlayManager.FocusUI,
         mSurfaceHolderMono = mSurfaceViewMono.getHolder();
         mSurfaceHolderMono.addCallback(callbackMono);
 
+        mProgressBar = (ProgressBar) mRootView.findViewById(R.id.progress_bar);
         mRenderOverlay = (RenderOverlay) mRootView.findViewById(R.id.render_overlay);
         mShutterButton = (ShutterButton) mRootView.findViewById(R.id.shutter_button);
         mVideoButton = (ImageView) mRootView.findViewById(R.id.video_button);
@@ -1633,6 +1636,10 @@ public class CaptureUI implements FocusOverlayManager.FocusUI,
         }
         mFilterModeSwitcher.setEnabled(enableFilterMenu);
         mSceneModeSwitcher.setEnabled(enableSceneMenu);
+    }
+
+    public void toggleProgressBar(boolean show) {
+        mProgressBar.setVisibility(show ? View.VISIBLE : View.GONE);
     }
 
     public boolean arePreviewControlsVisible() {
