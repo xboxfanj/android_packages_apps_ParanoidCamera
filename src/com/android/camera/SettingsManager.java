@@ -67,6 +67,7 @@ import com.android.camera.imageprocessor.filter.DeepZoomFilter;
 import com.android.camera.ui.ListMenu;
 import com.android.camera.ui.PanoCaptureProcessView;
 import com.android.camera.util.PersistUtil;
+import com.android.camera.util.ApiHelper;
 import com.android.camera.util.SettingTranslation;
 import com.android.camera.util.AutoTestUtil;
 
@@ -1468,6 +1469,8 @@ public class SettingsManager implements ListMenu.SettingsListener {
     private void filterHeifSizeOptions() {
         ListPreference picturePref = mPreferenceGroup.findPreference(KEY_PICTURE_SIZE);
         ListPreference videoQualityPref = mPreferenceGroup.findPreference(KEY_VIDEO_QUALITY);
+        if(picturePref == null || videoQualityPref == null)
+            return;
         if (filterUnsupportedOptions(picturePref, getSupportedPictureSize(
                 getCurrentCameraId()))) {
             mFilteredKeys.add(picturePref.getKey());
@@ -2399,6 +2402,16 @@ public class SettingsManager implements ListMenu.SettingsListener {
         String value = getValue(SettingsManager.KEY_PICTURE_FORMAT);
         if (value == null) return 0;
         return Integer.valueOf(value);
+    }
+
+    public boolean isHeifWriterEncoding() {
+        //disable on android P
+        return false;
+    }
+
+    public boolean isHeifHALEncoding() {
+        //HAL encoding by default on Android Q
+        return getSavePictureFormat() == HEIF_FORMAT;
     }
 
     public boolean isZSLInHALEnabled(){
