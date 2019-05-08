@@ -65,6 +65,7 @@ import com.android.camera.imageprocessor.filter.UbifocusFilter;
 import com.android.camera.imageprocessor.filter.DeepZoomFilter;
 import com.android.camera.ui.ListMenu;
 import com.android.camera.ui.PanoCaptureProcessView;
+import com.android.camera.util.PersistUtil;
 import com.android.camera.util.SettingTranslation;
 import com.android.camera.util.AutoTestUtil;
 
@@ -101,6 +102,9 @@ public class SettingsManager implements ListMenu.SettingsListener {
     public static final int MOOREA_SOCID = 365;
     public static final int SAIPAN_SOCID = 400;
     public static final int SM6250_SOCID = 407;
+    public static final boolean DEBUG =
+            (PersistUtil.getCamera2Debug() == PersistUtil.CAMERA2_DEBUG_DUMP_LOG) ||
+            (PersistUtil.getCamera2Debug() == PersistUtil.CAMERA2_DEBUG_DUMP_ALL);
 
     // Custom-Scenemodes start from 100
     public static final int SCENE_MODE_CUSTOM_START = 100;
@@ -2432,7 +2436,9 @@ public class SettingsManager implements ListMenu.SettingsListener {
         try {
             return mDependency.getJSONObject(key);
         } catch (JSONException e) {
-            Log.w(TAG, "getDependencyMapForKey JSONException No value for:" + key);
+            if (DEBUG) {
+                Log.w(TAG, "getDependencyMapForKey JSONException No value for:" + key);
+            }
             return null;
         }
     }
@@ -2446,7 +2452,9 @@ public class SettingsManager implements ListMenu.SettingsListener {
         try {
             return dependencyMap.getJSONObject(value);
         } catch (JSONException e) {
-            Log.w(TAG, "getDependencyList JSONException No value for:" + key);
+            if (DEBUG) {
+                Log.w(TAG, "getDependencyList JSONException No value for:" + key);
+            }
             return null;
         }
     }
