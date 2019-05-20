@@ -261,6 +261,7 @@ public class CaptureModule implements CameraModule, PhotoController,
     /** Add for SSM Configuration */
     private static final int STREAM_CONFIG_SSM = 0xF080;
     private int mCaptureCompleteCount = 0;
+    private boolean mSSMCaptureCompleteFlag = false;
 
     public static final boolean DEBUG =
             (PersistUtil.getCamera2Debug() == PersistUtil.CAMERA2_DEBUG_DUMP_LOG) ||
@@ -871,20 +872,15 @@ public class CaptureModule implements CameraModule, PhotoController,
             updateCaptureStateMachine(id, result);
             Integer ssmStatus = result.get(ssmCaptureComplete);
             if (ssmStatus != null) {
-                mActivity.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        mUI.toggleProgressBar(true /* show */);
-                    }
-                });
+                updateProgressBar(true);
             }
             Integer procComplete = result.get(ssmProcessingComplete);
             if (procComplete != null && ++mCaptureCompleteCount == 2) {
                 mCaptureCompleteCount = 0;
+                mSSMCaptureCompleteFlag = true;
                 mActivity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        mUI.toggleProgressBar(false /* hide */);
                         stopRecordingVideo(getMainCameraId());
                     }
                 });
@@ -5144,6 +5140,7 @@ public class CaptureModule implements CameraModule, PhotoController,
         mIsRecordingVideo = true;
         mMediaRecorderPausing = false;
         mIsPreviewingVideo = false;
+        mSSMCaptureCompleteFlag = false;
 
         checkAndPlayRecordSound(cameraId, true);
         mActivity.updateStorageSpaceAndHint();
@@ -5276,9 +5273,11 @@ public class CaptureModule implements CameraModule, PhotoController,
             try {
                 mVideoRecordRequestBuilder.set(ssmInterpFactor, mInterpFactor);
                 mVideoRecordRequestBuilder.set(ssmCaptureStart, 1);
-                List requestList = CameraUtil.createHighSpeedRequestList(
-                        mVideoRecordRequestBuilder.build());
-                mCurrentSession.setRepeatingBurst(requestList, mCaptureCallback, mCameraHandler);
+                mCurrentSession.captureBurst(CameraUtil.createHighSpeedRequestList(
+                        mVideoRecordRequestBuilder.build()), mCaptureCallback, mCameraHandler);
+                mVideoRecordRequestBuilder.set(ssmCaptureStart, 0);
+                mCurrentSession.setRepeatingBurst(CameraUtil.createHighSpeedRequestList(
+                        mVideoRecordRequestBuilder.build()), mCaptureCallback, mCameraHandler);
             } catch (CameraAccessException | IllegalArgumentException e) {
                 e.printStackTrace();
                 quitRecordingWithError("SSM starts failed");
@@ -5321,6 +5320,15 @@ public class CaptureModule implements CameraModule, PhotoController,
             }
             mHighSpeedCaptureRate = Integer.parseInt(value.substring(3));
         }
+    }
+
+    private void updateProgressBar(boolean show) {
+        mActivity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mUI.toggleProgressBar(show);
+            }
+        });
     }
 
     private void setUpVideoCaptureRequestBuilder(CaptureRequest.Builder builder,int cameraId) {
@@ -5717,6 +5725,12 @@ public class CaptureModule implements CameraModule, PhotoController,
     private void stopRecordingVideo(int cameraId) {
         Log.d(TAG, "stopRecordingVideo " + cameraId);
         mStopRecordingTime = System.currentTimeMillis();
+        if (isSSMEnabled()) {
+            updateProgressBar(false);
+            if (!mSSMCaptureCompleteFlag) {
+                warningToast("Super Slow Motion is not finished");
+            }
+        }
         mStopRecPending = true;
         boolean shouldAddToMediaStoreNow = false;
         // Stop recording
@@ -8031,7 +8045,7 @@ public class CaptureModule implements CameraModule, PhotoController,
         return session != null && builder != null;
     }
 
-    private boolean isSSMEnabled() {
+    public boolean isSSMEnabled() {
         return mSuperSlomoCapture && (int)mHighSpeedFPSRange.getUpper() > NORMAL_SESSION_MAX_FPS;
     }
 
