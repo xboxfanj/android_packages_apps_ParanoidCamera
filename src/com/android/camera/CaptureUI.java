@@ -502,6 +502,7 @@ public class CaptureUI implements FocusOverlayManager.FocusUI,
 
         mCameraControls = (OneUICameraControls) mRootView.findViewById(R.id.camera_controls);
         mFaceView = (Camera2FaceView) mRootView.findViewById(R.id.face_view);
+        mFaceView.initMode();
 
         mCancelButton = (ImageView) mRootView.findViewById(R.id.cancel_button);
         final int intentMode = mModule.getCurrentIntentMode();
@@ -859,6 +860,7 @@ public class CaptureUI implements FocusOverlayManager.FocusUI,
         if(mModule.isMFNREnabled() && mModule.getMainCameraId() ==  android.hardware.Camera.CameraInfo.CAMERA_FACING_FRONT){
             mFilterModeSwitcher.setVisibility(View.INVISIBLE);
         }
+        mFaceView.initMode();
     }
 
     public void initializeProMode(boolean promode) {
