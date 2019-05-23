@@ -238,7 +238,6 @@ public class SettingsManager implements ListMenu.SettingsListener {
     private boolean mIsFrontCameraPresent = false;
     private boolean mHasMultiCamera = false;
     private boolean mIsHFRSupported = false;
-    private int mHighestSpeedVideoRate = 30;
     private JSONObject mDependency;
     private int mCameraId;
     private Set<String> mFilteredKeys;
@@ -479,7 +478,6 @@ public class SettingsManager implements ListMenu.SettingsListener {
             supportLists.add("<Front camera support VideoSizes and fps>");
             for (int i=0; i < frontVideoLists.size(); i++) {
                 String videoSize = frontVideoLists.get(i);
-                Log.d("zhuw", "front video size = " + videoSize);
                 List<String> fps = getSupportedHFRForAutoTest(videoSize);
                 supportLists.add(videoSize);
                 supportLists.addAll(fps);
@@ -492,7 +490,6 @@ public class SettingsManager implements ListMenu.SettingsListener {
         supportLists.add("<Back camera support VideoSizes and fps>");
         for (int i=0; i < backVideoLists.size(); i++) {
             String videoSize = backVideoLists.get(i);
-            Log.d("zhuw", "back video size = " + videoSize);
             List<String> fps = getSupportedHFRForAutoTest(videoSize);
             supportLists.add(videoSize);
             supportLists.addAll(fps);
@@ -943,6 +940,12 @@ public class SettingsManager implements ListMenu.SettingsListener {
     }
 
     private void filterPreferences(int cameraId) {
+        if (CaptureModule.CURRENT_MODE == CaptureModule.CameraMode.VIDEO) {
+            ListPreference hfrPref = mPreferenceGroup.findPreference(KEY_VIDEO_HIGH_FRAME_RATE);
+            if (hfrPref != null) {
+                hfrPref.setValue("off");
+            }
+        }
         // filter unsupported preferences
         ListPreference forceAUX = mPreferenceGroup.findPreference(KEY_FORCE_AUX);
         ListPreference whiteBalance = mPreferenceGroup.findPreference(KEY_WHITE_BALANCE);
@@ -1423,10 +1426,6 @@ public class SettingsManager implements ListMenu.SettingsListener {
         return mIsHFRSupported;
     }
 
-    public void setHFRDefaultRate() {
-        setValue(KEY_VIDEO_HIGH_FRAME_RATE, "hfr" + String.valueOf(mHighestSpeedVideoRate));
-    }
-
     private void filterVideoEncoderProfileOptions() {
         ListPreference videoEncoderProfilePref =
                 mPreferenceGroup.findPreference(KEY_VIDEO_ENCODER_PROFILE);
@@ -1483,8 +1482,7 @@ public class SettingsManager implements ListMenu.SettingsListener {
                                 videoSize.getWidth() < vEncoder.mMinFrameWidth ||
                                 videoSize.getHeight() > vEncoder.mMaxFrameHeight ||
                                 videoSize.getHeight() < vEncoder.mMinFrameHeight) {
-                            Log.d("zhuw", "error size " + videoSizeStr);
-                            Log.e("zhuw", "Codec = " + vEncoder.mCodec + ", capabilities: " +
+                            Log.e(TAG, "Codec = " + vEncoder.mCodec + ", capabilities: " +
                                     "mMinFrameWidth = " + vEncoder.mMinFrameWidth + " , " +
                                     "mMinFrameHeight = " + vEncoder.mMinFrameHeight + " , " +
                                     "mMaxFrameWidth = " + vEncoder.mMaxFrameWidth + " , " +
@@ -1592,9 +1590,9 @@ public class SettingsManager implements ListMenu.SettingsListener {
                 if (findVideoEncoder) break;
             }
 
-            String rate = "";
             try {
                 Range[] range = getSupportedHighSpeedVideoFPSRange(mCameraId, videoSize);
+                String rate;
                 for (Range r : range) {
                     // To support HFR for both preview and recording,
                     // minmal FPS needs to be equal to maximum FPS
@@ -1609,8 +1607,6 @@ public class SettingsManager implements ListMenu.SettingsListener {
                                     supported.add("2x_" + rate);
                                     supported.add("4x_" + rate);
                                 }
-                                mHighestSpeedVideoRate = Integer.valueOf(rate) > mHighestSpeedVideoRate ?
-                                        Integer.valueOf(rate) : mHighestSpeedVideoRate;
                             }
                         }
                     }
@@ -1633,8 +1629,6 @@ public class SettingsManager implements ListMenu.SettingsListener {
                                     supported.add("2x_" + mExtendedHFRSize[i + 2]);
                                     supported.add("4x_" + mExtendedHFRSize[i + 2]);
                                 }
-                                mHighestSpeedVideoRate = mExtendedHFRSize[i + 2] > mHighestSpeedVideoRate ?
-                                        mExtendedHFRSize[i + 2] : mHighestSpeedVideoRate;
                             }
                         }
                     }
