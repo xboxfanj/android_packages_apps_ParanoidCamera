@@ -760,7 +760,7 @@ public class SettingsActivity extends PreferenceActivity {
                         removePreference(SettingsManager.KEY_SWITCH_CAMERA, developer);
                     }
                     for (String removeKey : videoOnlyList) {
-                        developer.removePreference(findPreference(removeKey));
+                        removePreference(removeKey, developer);
                     }
                 }
                 break;
