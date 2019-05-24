@@ -3686,6 +3686,7 @@ public class CaptureModule implements CameraModule, PhotoController,
         }
         mUI.hideSurfaceView();
         mZoomValue = 1f;
+        mUI.updateZoomSeekBar(1.0f);
         mFirstPreviewLoaded = false;
         if (isExitCamera) {
             stopBackgroundThread();
@@ -4077,7 +4078,15 @@ public class CaptureModule implements CameraModule, PhotoController,
     @Override
     public void onZoomChanged(float requestedZoom) {
         mZoomValue = requestedZoom;
+        mUI.updateZoomSeekBar(mZoomValue);
         applyZoomAndUpdate();
+    }
+
+    public void updateZoomChanged(float requestedZoom) {
+        if (Math.abs(mZoomValue - requestedZoom) > 0.05) {
+            mZoomValue = requestedZoom;
+            applyZoomAndUpdate();
+        }
     }
 
     private boolean isInMode(int cameraId) {
@@ -7811,6 +7820,13 @@ public class CaptureModule implements CameraModule, PhotoController,
         } else {
             restartAll();
         }
+        if (mCurrentSceneMode.mode == CameraMode.PRO_MODE ||
+                mCurrentSceneMode.mode == CameraMode.RTB) {
+            mUI.hideZoomSeekBar();
+        } else {
+            mUI.showZoomSeekBar();
+        }
+        mUI.updateZoomSeekBar(1.0f);
         return 1;
     }
 
