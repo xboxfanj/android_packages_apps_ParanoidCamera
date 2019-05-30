@@ -884,7 +884,6 @@ public class CaptureModule implements CameraModule, PhotoController,
                                        TotalCaptureResult result) {
             int id = (int) result.getRequest().getTag();
 
-
             if (id == getMainCameraId()) {
                 updateFocusStateChange(result);
                 updateAWBCCTAndgains(result);
@@ -895,7 +894,6 @@ public class CaptureModule implements CameraModule, PhotoController,
                 } else {
                     updateFaceView(faces, null);
                 }
-
                 updateT2tTrackerView(result);
             }
 
@@ -928,8 +926,20 @@ public class CaptureModule implements CameraModule, PhotoController,
         try {
             if (mPreviewRequestBuilder[id] != null) {
                 mPreviewRequestBuilder[id].set(CaptureModule.t2t_cmd_trigger, t2tTrigger);
-                mCaptureSession[id].setRepeatingRequest(mPreviewRequestBuilder[id].build(),
-                        mCaptureCallback, mCameraHandler);
+                if (mCurrentSceneMode.mode == CameraMode.HFR && mCurrentSession != null &&
+                        mCurrentSession instanceof CameraConstrainedHighSpeedCaptureSession) {
+                    if (mCurrentSession != null) {
+                        List requestList = CameraUtil.createHighSpeedRequestList(
+                                mPreviewRequestBuilder[id].build());
+                        mCurrentSession.setRepeatingBurst(requestList, mCaptureCallback,
+                                mCameraHandler);
+                    }
+                } else {
+                    if (mCurrentSession != null) {
+                        mCurrentSession.setRepeatingRequest(mPreviewRequestBuilder[id].build(),
+                                mCaptureCallback, mCameraHandler);
+                    }
+                }
                 if (DEBUG) {
                     Log.v(TAG, "updateTouchFocusState is called");
                 }
@@ -5314,6 +5324,7 @@ public class CaptureModule implements CameraModule, PhotoController,
         applyVideoEIS(builder);
         applyVideoHDR(builder);
         applyEarlyPCR(builder);
+        applyTouchTrackFocus(builder);
     }
 
     private void applyVideoHDR(CaptureRequest.Builder builder) {
@@ -7177,8 +7188,20 @@ public class CaptureModule implements CameraModule, PhotoController,
                 registerRect[3] = mT2TrackRegions[id][0].getHeight();
                 mPreviewRequestBuilder[id].set(CaptureModule.t2t_register_roi, registerRect);
                 mPreviewRequestBuilder[id].set(CaptureModule.t2t_cmd_trigger, t2tTrigger);
-                mCaptureSession[id].setRepeatingRequest(mPreviewRequestBuilder[id].build(),
-                        mCaptureCallback, mCameraHandler);
+                if (mCurrentSceneMode.mode == CameraMode.HFR && mCurrentSession != null &&
+                        mCurrentSession instanceof CameraConstrainedHighSpeedCaptureSession) {
+                    if (mCurrentSession != null) {
+                        List requestList = CameraUtil.createHighSpeedRequestList(
+                                mPreviewRequestBuilder[id].build());
+                        mCurrentSession.setRepeatingBurst(requestList, mCaptureCallback,
+                                mCameraHandler);
+                    }
+                } else {
+                    if (mCurrentSession != null) {
+                        mCurrentSession.setRepeatingRequest(mPreviewRequestBuilder[id].build(),
+                                mCaptureCallback, mCameraHandler);
+                    }
+                }
                 if (DEBUG) {
                     Log.v(TAG, "triggerTouchFocus is called. ROI " + registerRect[0] + " "
                             + registerRect[1] + " " + registerRect[2] + " " + registerRect[3]);
@@ -7216,7 +7239,7 @@ public class CaptureModule implements CameraModule, PhotoController,
         }
         x += (width - p.x) / 2;
         y += (height - p.y) / 2;
-        mT2TrackRegions[id] = afaeRectangle(x, y, width, height, 1f, mCropRegion[id], id);
+        mT2TrackRegions[id] = afaeRectangle(x, y, width, height, 1.25f, mCropRegion[id], id);
         if (DEBUG) {
             Log.d(TAG, "transformTouchCoords " + mT2TrackRegions[id][0].getX() + " " +
                     mT2TrackRegions[id][0].getY() + " " + mT2TrackRegions[id][0].getWidth() +

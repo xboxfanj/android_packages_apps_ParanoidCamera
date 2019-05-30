@@ -734,6 +734,7 @@ public class SettingsActivity extends PreferenceActivity {
                 add(SettingsManager.KEY_SHARPNESS_CONTROL_MODE);
                 add(SettingsManager.KEY_AF_MODE);
                 add(SettingsManager.KEY_EXPOSURE_METERING_MODE);
+                add(SettingsManager.KEY_TOUCH_TRACK_FOCUS);
             }
         };
         final ArrayList<String> proModeOnlyList = new ArrayList<String>() {
