@@ -7833,14 +7833,18 @@ public class CaptureModule implements CameraModule, PhotoController,
         } else {
             restartAll();
         }
+        updateZoomSeekBarVisible();
+        mUI.updateZoomSeekBar(1.0f);
+        return 1;
+    }
+
+    public void updateZoomSeekBarVisible() {
         if (mCurrentSceneMode.mode == CameraMode.PRO_MODE ||
                 mCurrentSceneMode.mode == CameraMode.RTB) {
             mUI.hideZoomSeekBar();
         } else {
             mUI.showZoomSeekBar();
         }
-        mUI.updateZoomSeekBar(1.0f);
-        return 1;
     }
 
     public int getCurrentModeIndex() {
