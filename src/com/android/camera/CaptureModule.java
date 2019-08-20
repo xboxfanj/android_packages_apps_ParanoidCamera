@@ -6111,7 +6111,7 @@ public class CaptureModule implements CameraModule, PhotoController,
                 .getAudioEncoder(mSettingsManager.getValue(SettingsManager.KEY_AUDIO_ENCODER));
 
         mProfile.videoCodec = videoEncoder;
-        if (!mCaptureTimeLapse && !hfr && !mSuperSlomoCapture && !mHighSpeedCapture) {
+        if (!mCaptureTimeLapse && !hfr && !mSuperSlomoCapture) {
             mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
             mProfile.audioCodec = audioEncoder;
             if (mProfile.audioCodec == MediaRecorder.AudioEncoder.AMR_NB) {
@@ -6143,7 +6143,7 @@ public class CaptureModule implements CameraModule, PhotoController,
             mMediaRecorder.setVideoSize(mProfile.videoFrameWidth, mProfile.videoFrameHeight);
         }
         mMediaRecorder.setVideoEncoder(videoEncoder);
-        if (!mCaptureTimeLapse && !hfr && !mSuperSlomoCapture && !mHighSpeedCapture) {
+        if (!mCaptureTimeLapse && !hfr && !mSuperSlomoCapture) {
             mMediaRecorder.setAudioEncodingBitRate(mProfile.audioBitRate);
             mMediaRecorder.setAudioChannels(mProfile.audioChannels);
             mMediaRecorder.setAudioSamplingRate(mProfile.audioSampleRate);
