@@ -3891,6 +3891,7 @@ public class CaptureModule implements CameraModule, PhotoController,
         updateTimeLapseSetting();
         estimateJpegFileSize();
         updateMaxVideoDuration();
+        mSettingsManager.filterPictureFormatByIntent(mIntentMode);
     }
 
     private void updatePreviewSize() {
