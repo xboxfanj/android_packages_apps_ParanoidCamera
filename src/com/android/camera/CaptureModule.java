@@ -963,6 +963,7 @@ public class CaptureModule implements CameraModule, PhotoController,
                 updateStatsView(stats_visualizer,result);
             } else {
                 mUI.updateAWBInfoVisibility(View.GONE);
+                mUI.updateAECInfoVisibility(View.GONE);
             }
         }
     };
