@@ -167,7 +167,7 @@ public class CaptureUI implements FocusOverlayManager.FocusUI,
             if(mTrackingFocusRenderer != null && mTrackingFocusRenderer.isVisible()) {
                 mTrackingFocusRenderer.setSurfaceDim(mSurfaceView.getLeft(), mSurfaceView.getTop(), mSurfaceView.getRight(), mSurfaceView.getBottom());
             }
-            if(mT2TFocusRenderer != null && mT2TFocusRenderer.isVisible()) {
+            if(mT2TFocusRenderer != null && mT2TFocusRenderer.isShown()) {
                 mT2TFocusRenderer.setSurfaceDim(mSurfaceView.getLeft(), mSurfaceView.getTop(),
                         mSurfaceView.getRight(), mSurfaceView.getBottom());
             }
@@ -504,6 +504,15 @@ public class CaptureUI implements FocusOverlayManager.FocusUI,
         mFaceView = (Camera2FaceView) mRootView.findViewById(R.id.face_view);
         mFaceView.initMode();
 
+        //Touch track focus
+        mT2TFocusRenderer = (TouchTrackFocusRenderer) mRootView.findViewById(R.id.touch_track_focus);
+        mT2TFocusRenderer.init(mActivity, mModule, this);
+        if (mModule.isT2TFocusSettingOn()) {
+            mT2TFocusRenderer.setVisible(true);
+        } else {
+            mT2TFocusRenderer.setVisible(false);
+        }
+
         mCancelButton = (ImageView) mRootView.findViewById(R.id.cancel_button);
         final int intentMode = mModule.getCurrentIntentMode();
         if (intentMode != CaptureModule.INTENT_MODE_NORMAL) {
@@ -586,17 +595,6 @@ public class CaptureUI implements FocusOverlayManager.FocusUI,
             mTrackingFocusRenderer.setVisible(true);
         } else {
             mTrackingFocusRenderer.setVisible(false);
-        }
-
-        //Touch track focus
-        if(mT2TFocusRenderer == null) {
-            mT2TFocusRenderer = new TouchTrackFocusRenderer(mActivity, mModule, this);
-            mRenderOverlay.addRenderer(mT2TFocusRenderer);
-        }
-        if (mModule.isT2TFocusSettingOn()) {
-            mT2TFocusRenderer.setVisible(true);
-        } else {
-            mT2TFocusRenderer.setVisible(false);
         }
 
         if (mGestures == null) {

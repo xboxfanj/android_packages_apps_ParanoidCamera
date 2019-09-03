@@ -1022,7 +1022,7 @@ public class CaptureModule implements CameraModule, PhotoController,
             mT2TFocusRenderer = getT2TFocusRenderer();
             updateT2TTracking();
         }
-        if (mT2TFocusRenderer.isVisible()) {
+        if (mT2TFocusRenderer.isShown()) {
             updateT2TTracking();
             try{
                 if (result.get(t2t_tracker_status) != null) {
@@ -1954,23 +1954,25 @@ public class CaptureModule implements CameraModule, PhotoController,
                         if (mSaveRaw) {
                             mPreviewRequestBuilder[id].addTarget(mRawImageReader[id].getSurface());
                         }
-                        mCameraDevice[id].createReprocessableCaptureSession(new InputConfiguration(mImageReader[id].getWidth(),
-                                mImageReader[id].getHeight(), mImageReader[id].getImageFormat()), list, captureSessionCallback, null);
+                        mCameraDevice[id].createReprocessableCaptureSession(
+                                new InputConfiguration(mImageReader[id].getWidth(),
+                                mImageReader[id].getHeight(), mImageReader[id].getImageFormat()),
+                                list, captureSessionCallback, mCameraHandler);
                     } else {
                         if (mSettingsManager.getSavePictureFormat() == SettingsManager.HEIF_FORMAT &&
                                 outputConfigurations != null) {
                             mCameraDevice[id].createCaptureSessionByOutputConfigurations(outputConfigurations,
-                                    captureSessionCallback,null);
+                                    captureSessionCallback, mCameraHandler);
                         } else {
-                            mCameraDevice[id].createCaptureSession(list, captureSessionCallback, null);
+                            mCameraDevice[id].createCaptureSession(list, captureSessionCallback, mCameraHandler);
                         }
                     }
                 } else {
                     if (ApiHelper.isAndroidPOrHigher() && outputConfigurations != null) {
-                        createCameraSessionWithSessionConfiguration(id, outputConfigurations, captureSessionCallback,
-                                mCameraHandler, mPreviewRequestBuilder[id].build());
+                        createCameraSessionWithSessionConfiguration(id, outputConfigurations,
+                                captureSessionCallback, mCameraHandler, mPreviewRequestBuilder[id].build());
                     } else {
-                        mCameraDevice[id].createCaptureSession(list, captureSessionCallback, null);
+                        mCameraDevice[id].createCaptureSession(list, captureSessionCallback, mCameraHandler);
                     }
                 }
             } else {
@@ -1980,7 +1982,7 @@ public class CaptureModule implements CameraModule, PhotoController,
                 }
                 list.add(mImageReader[id].getSurface());
                 // Here, we create a CameraCaptureSession for camera preview.
-                mCameraDevice[id].createCaptureSession(list, captureSessionCallback, null);
+                mCameraDevice[id].createCaptureSession(list, captureSessionCallback, mCameraHandler);
             }
         } catch (CameraAccessException | NullPointerException e) {
             Log.d(TAG, "create session error");
@@ -2100,7 +2102,7 @@ public class CaptureModule implements CameraModule, PhotoController,
                                     setCameraModeSwitcherAllowed(true);
                                     Toast.makeText(mActivity, "Failed", Toast.LENGTH_SHORT).show();
                                 }
-                            }, null);
+                            }, mCameraHandler);
                 } else {
                     surfaces.add(mVideoSnapshotImageReader.getSurface());
                     String zzHDR = mSettingsManager.getValue(SettingsManager.KEY_VIDEO_HDR_VALUE);
@@ -2121,14 +2123,14 @@ public class CaptureModule implements CameraModule, PhotoController,
                                 + mStreamConfigOptMode);
                     }
                     if(mStreamConfigOptMode == 0) {
-                        mCameraDevice[cameraId].createCaptureSession(surfaces, mCCSSateCallback, null);
+                        mCameraDevice[cameraId].createCaptureSession(surfaces, mCCSSateCallback, mCameraHandler);
                     } else {
                         List<OutputConfiguration> outConfigurations = new ArrayList<>(surfaces.size());
                         for (Surface sface : surfaces) {
                             outConfigurations.add(new OutputConfiguration(sface));
                         }
                         mCameraDevice[cameraId].createCustomCaptureSession(null, outConfigurations,
-                                mStreamConfigOptMode, mCCSSateCallback, null);
+                                mStreamConfigOptMode, mCCSSateCallback, mCameraHandler);
                     }
                 }
             }
@@ -2748,9 +2750,9 @@ public class CaptureModule implements CameraModule, PhotoController,
             CaptureRequest.Builder captureBuilder =
                     mCameraDevice[id].createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
 
-            if(mSettingsManager.isZSLInHALEnabled() ||  isActionImageCapture() ) {
+            if (mSettingsManager.isZSLInHALEnabled() || isActionImageCapture()) {
                 captureBuilder.set(CaptureRequest.CONTROL_ENABLE_ZSL, true);
-            }else{
+            } else {
                 captureBuilder.set(CaptureRequest.CONTROL_ENABLE_ZSL, false);
             }
 
@@ -4574,7 +4576,7 @@ public class CaptureModule implements CameraModule, PhotoController,
         if (mUI.isOverControlRegion(newXY)) return;
         if (!mUI.isOverSurfaceView(newXY)) return;
 
-        if (mT2TFocusRenderer != null && mT2TFocusRenderer.isVisible()) {
+        if (mT2TFocusRenderer != null && mT2TFocusRenderer.isShown()) {
             mT2TFocusRenderer.onSingleTapUp(x, y);
             triggerTouchFocus(x, y, TouchTrackFocusRenderer.TRACKER_CMD_REG);
             return;
