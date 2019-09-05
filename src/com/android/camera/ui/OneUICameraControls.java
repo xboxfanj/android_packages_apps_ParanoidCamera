@@ -72,7 +72,6 @@ public class OneUICameraControls extends RotatableLayout {
     private static final int WIDTH_GRID = 5;
     private static final int HEIGHT_GRID = 7;
     private View[] mViews;
-    private RemainingPhotos mRemainingPhotos;
     private int mOrientation;
 
     private static int mTop = 0;
@@ -154,7 +153,6 @@ public class OneUICameraControls extends RotatableLayout {
         mPreview = findViewById(R.id.preview_thumb);
         mSceneModeSwitcher = findViewById(R.id.scene_mode_switcher);
         mFilterModeSwitcher = findViewById(R.id.filter_mode_switcher);
-        mRemainingPhotos = (RemainingPhotos) findViewById(R.id.remaining_photos);
         mCancelButton = findViewById(R.id.cancel_button);
         mProModeLayout = (ViewGroup) findViewById(R.id.pro_mode_layout);
         mProModeCloseButton = findViewById(R.id.promode_close_button);
@@ -439,20 +437,8 @@ public class OneUICameraControls extends RotatableLayout {
         }
     }
 
-    public void updateRemainingPhotos(int remaining) {
-        long remainingStorage = Storage.getAvailableSpace() - Storage.LOW_STORAGE_THRESHOLD_BYTES;
-        if (remaining < 0 && remainingStorage <= 0) {
-            mRemainingPhotos.setVisibility(View.INVISIBLE);
-            } else {
-            mRemainingPhotos.setRemaining(remaining);
-        }
-    }
-
     public void showRefocusToast(boolean show) {
         mRefocusToast.setVisibility(show ? View.VISIBLE : View.GONE);
-        if (mRemainingPhotos.getRemaining() > 0) {
-            mRemainingPhotos.setVisibility(show ? View.INVISIBLE : View.VISIBLE);
-        }
     }
 
     public void setOrientation(int orientation, boolean animation) {
@@ -461,7 +447,7 @@ public class OneUICameraControls extends RotatableLayout {
                 mSceneModeSwitcher, mFilterModeSwitcher, mFrontBackSwitcher,
                 mFlashButton, mPreview, mMute,
                 mShutter, mVideoShutter, mMakeupSeekBarLowText, mMakeupSeekBarHighText,
-                mPauseButton, mExitBestPhotpMode, mRemainingPhotos
+                mPauseButton, mExitBestPhotpMode
         };
 
         for (View v : views) {

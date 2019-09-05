@@ -134,23 +134,6 @@
         android:id="@+id/ts_makeup_switcher"
         style="@style/OneUIMenuButton" />
 
-    <LinearLayout
-        android:id="@+id/remaining_photos"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@android:color/transparent"
-        android:orientation="horizontal"
-        android:visibility="gone">
-
-        <TextView
-            android:id="@+id/remaining_photos_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@android:color/transparent"
-            android:textColor="@android:color/white"
-            android:visibility="gone" />
-    </LinearLayout>
-
     <include layout="@layout/pro_mode_layout" />
 
     <ImageView

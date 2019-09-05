@@ -47,7 +47,6 @@ public class CameraControls extends RotatableLayout implements Rotatable {
     private View mExitPanorama;
     private View mPreview;
     private FrontBackSwitch mFrontBackSwitcher;
-    private RemainingPhotos mRemainingPhotos;
     private ArrowTextView mRefocusToast;
 
     private static final int WIDTH_GRID = 5;
@@ -106,7 +105,6 @@ public class CameraControls extends RotatableLayout implements Rotatable {
         mExitPanorama = findViewById(R.id.exit_panorama);
         mPreview = findViewById(R.id.preview_thumb);
         mFrontBackSwitcher = (FrontBackSwitch) findViewById(R.id.front_back_switcher);
-        mRemainingPhotos = (RemainingPhotos) findViewById(R.id.remaining_photos);
 
         mExitPanorama.setVisibility(View.GONE);
 
@@ -120,7 +118,6 @@ public class CameraControls extends RotatableLayout implements Rotatable {
         mViewList.add(findViewById(R.id.done_button));
         mViewList.add(findViewById(R.id.btn_cancel));
         mViewList.add(findViewById(R.id.btn_retake));
-        mViewList.add(mRemainingPhotos);
 
         mCameraControlsBarArrow.setOnClickListener(new View.OnClickListener() {
     @Override
@@ -209,15 +206,6 @@ public class CameraControls extends RotatableLayout implements Rotatable {
         mRefocusToast.setVisibility(View.GONE);
     }
 
-    public void updateRemainingPhotos(int remaining) {
-        long remainingStorage = Storage.getAvailableSpace() - Storage.LOW_STORAGE_THRESHOLD_BYTES;
-        if (remaining < 0 && remainingStorage <= 0) {
-            mRemainingPhotos.setVisibility(View.INVISIBLE);
-            } else {
-            mRemainingPhotos.setRemaining(remaining);
-            }
-        }
-
     public void setControlHeight(int height) {
         mControlsParent.setLayoutParams(new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
@@ -233,9 +221,6 @@ public class CameraControls extends RotatableLayout implements Rotatable {
 
     public void showRefocusToast(boolean show) {
         mRefocusToast.setVisibility(show ? View.VISIBLE : View.GONE);
-        if (mRemainingPhotos.getRemaining() > 0) {
-            //mRemainingPhotos.setVisibility(show ? View.INVISIBLE : View.VISIBLE);
-        }
     }
 
     private void animateCameraControlsBarArrow(int rotation) {
@@ -274,10 +259,6 @@ public class CameraControls extends RotatableLayout implements Rotatable {
                 ((Rotatable) v).setOrientation(orientation, animation);
             }
         }
-    }
-
-    public void hideRemainingPhotoCnt() {
-        mRemainingPhotos.setVisibility(View.INVISIBLE);
     }
 
     private class ArrowTextView extends TextView {

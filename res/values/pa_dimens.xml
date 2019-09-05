@@ -26,8 +26,6 @@
 
     <dimen name="preview_gestures_swipe_threshold">25dp</dimen>
 
-    <dimen name="remaining_photos_text_size">10sp</dimen>
-
     <dimen name="focus_circle_radius">40dp</dimen>
     <dimen name="focus_circle_radius_offset">6dp</dimen>
     <dimen name="focus_inner_circle_radius">13dp</dimen>

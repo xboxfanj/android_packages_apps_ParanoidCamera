@@ -407,7 +407,6 @@ public class PhotoUI extends CameraUI implements PieListener,
         });
         if (mController.isImageCaptureIntent()) {
             hideSwitcher();
-            getCameraControls().hideRemainingPhotoCnt();
             getCameraControls().showCameraControlsSettings(false);
             getCameraControls().disableCameraControlsSettingsSwitch();
 
@@ -1085,10 +1084,6 @@ public class PhotoUI extends CameraUI implements PieListener,
 
     public void setPreference(String key, String value) {
         mMenu.setPreference(key, value);
-    }
-
-    public void updateRemainingPhotos(int remaining) {
-        getCameraControls().updateRemainingPhotos(remaining);
     }
 
     public void setOrientation(int orientation, boolean animation) {
