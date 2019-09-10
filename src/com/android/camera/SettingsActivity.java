@@ -60,6 +60,7 @@ import android.text.InputType;
 
 import org.codeaurora.snapcam.R;
 import com.android.camera.util.CameraUtil;
+import com.android.camera.CaptureModule.CameraMode;
 import com.android.camera.ui.RotateTextToast;
 import com.android.camera.util.PersistUtil;
 
@@ -140,7 +141,7 @@ public class SettingsActivity extends PreferenceActivity {
         @Override
         public void onSettingsChanged(List<SettingsManager.SettingState> settings){
             Map<String, SettingsManager.Values> map = mSettingsManager.getValuesMap();
-            for( SettingsManager.SettingState state : settings) {
+            for(SettingsManager.SettingState state : settings) {
                 SettingsManager.Values values = map.get(state.key);
                 boolean enabled = false;
                 if (values != null) {
@@ -156,7 +157,7 @@ public class SettingsActivity extends PreferenceActivity {
                     UpdateManualExposureSettings();
                 }
 
-                if ( pref.getKey().equals(SettingsManager.KEY_QCFA) ||
+                if (pref.getKey().equals(SettingsManager.KEY_QCFA) ||
                         pref.getKey().equals(SettingsManager.KEY_PICTURE_FORMAT) ) {
                     mSettingsManager.updatePictureAndVideoSize();
                     updatePreference(SettingsManager.KEY_PICTURE_SIZE);
@@ -180,7 +181,7 @@ public class SettingsActivity extends PreferenceActivity {
                     updateFormatPreference();
                 }
 
-                if ( (pref.getKey().equals(SettingsManager.KEY_MANUAL_WB)) ) {
+                if ((pref.getKey().equals(SettingsManager.KEY_MANUAL_WB)) ) {
                     updateManualWBSettings();
                 }
 
@@ -197,6 +198,10 @@ public class SettingsActivity extends PreferenceActivity {
                 if(pref.getKey().equals(SettingsManager.KEY_VIDEO_QUALITY) ||
                    pref.getKey().equals(SettingsManager.KEY_VIDEO_HIGH_FRAME_RATE)){
                     updateEISPreference();
+                }
+
+                if(pref.getKey().equals(SettingsManager.KEY_CAPTURE_MFNR_VALUE)) {
+                    updateZslPreference();
                 }
             }
         }
@@ -222,12 +227,42 @@ public class SettingsActivity extends PreferenceActivity {
         }
     }
 
+    private boolean isMFNREnabled() {
+        boolean mfnrEnable = false;
+        String mfnrValue = mSettingsManager.getValue(SettingsManager.KEY_CAPTURE_MFNR_VALUE);
+        if (mfnrValue != null) {
+            mfnrEnable = mfnrValue.equals("1");
+        }
+        return mfnrEnable;
+    }
+
+    private void updateZslPreference() {
+        ListPreference ZSLPref = (ListPreference) findPreference(SettingsManager.KEY_ZSL);
+        List<String> key_zsl = new ArrayList<String>(Arrays.asList("Off", "HAL-ZSL" ));
+        List<String> value_zsl = new ArrayList<String>(Arrays.asList( "disable", "hal-zsl"));
+
+        if (ZSLPref != null) {
+            if (!isMFNREnabled()) {
+                key_zsl.add("APP-ZSL");
+                value_zsl.add("app-zsl");
+            }
+            ZSLPref.setEntries(key_zsl.toArray(new CharSequence[key_zsl.size()]));
+            ZSLPref.setEntryValues(value_zsl.toArray(new CharSequence[value_zsl.size()]));
+            int idx = ZSLPref.findIndexOfValue(ZSLPref.getValue());;
+            if (idx < 0 ) {
+                idx = 0;
+            }
+            ZSLPref.setValueIndex(idx);
+        }
+    }
+
     private void updateFormatPreference() {
         ListPreference formatPref = (ListPreference)findPreference(SettingsManager.KEY_PICTURE_FORMAT);
         ListPreference ZSLPref = (ListPreference) findPreference(SettingsManager.KEY_ZSL);
         ListPreference mfnrPref = (ListPreference) findPreference(SettingsManager.KEY_CAPTURE_MFNR_VALUE);
         SwitchPreference selfiePref = (SwitchPreference) findPreference(SettingsManager.KEY_SELFIEMIRROR);
-        if (formatPref == null) {
+
+        if (formatPref == null || ZSLPref ==null) {
             return;
         }
         if((ZSLPref != null && "app-zsl".equals(ZSLPref.getValue())) ||
@@ -904,6 +939,7 @@ public class SettingsActivity extends PreferenceActivity {
                 add(SettingsManager.KEY_EXPOSURE_METERING_MODE);
                 add(SettingsManager.KEY_TOUCH_TRACK_FOCUS);
                 add(SettingsManager.KEY_TONE_MAPPING);
+                add(SettingsManager.KEY_ZSL);
             }
         };
         final ArrayList<String> proModeOnlyList = new ArrayList<String>() {
@@ -1097,6 +1133,7 @@ public class SettingsActivity extends PreferenceActivity {
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
+        updateZslPreference();
     }
 
     private void updateVideoHDRPreference() {
