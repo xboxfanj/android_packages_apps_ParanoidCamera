@@ -7463,9 +7463,9 @@ public class CaptureModule implements CameraModule, PhotoController,
 
     public void restartAll() {
         Log.d(TAG, "restart all");
-        reinit();
         onPauseBeforeSuper();
         onPauseAfterSuper(false);
+        reinit();
         onResumeBeforeSuper();
         onResumeAfterSuper(true);
         setRefocusLastTaken(false);
