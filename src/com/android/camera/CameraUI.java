@@ -61,8 +61,10 @@ public abstract class CameraUI implements
 
     private boolean mUIhidden;
 
-    protected abstract @LayoutRes
-    int getUILayout();
+    public @LayoutRes
+    int getUILayout() {
+        return R.layout.camera_controls;
+    }
 
     public CameraUI(CameraActivity activity, View parent) {
         mActivity = activity;
