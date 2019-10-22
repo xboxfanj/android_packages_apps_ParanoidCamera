@@ -467,6 +467,9 @@ public class CaptureModule implements CameraModule, PhotoController,
     private static final CaptureRequest.Key<Byte> custom_noise_reduction =
             new CaptureRequest.Key<>("org.quic.camera.CustomNoiseReduction.CustomNoiseReduction", byte.class);
 
+    public static final CameraCharacteristics.Key<int[]> eis_config_table = new CameraCharacteristics.Key<>(
+            "org.quic.camera2.VideoEisLIveshotConfigurations.info.VideoEisLIveshotConfigurationsTable",int[].class);
+
     public static final CaptureRequest.Key<Byte> sensor_mode_fs =
             new CaptureRequest.Key<>("org.quic.camera.SensorModeFS ", byte.class);
     public static CameraCharacteristics.Key<Byte> fs_mode_support =
@@ -2069,6 +2072,9 @@ public class CaptureModule implements CameraModule, PhotoController,
             mIsPreviewingVideo = true;
             if (ApiHelper.isAndroidPOrHigher()) {
                 if (isHighSpeedRateCapture()) {
+                    if (mSettingsManager.isHFRLiveshotSupported()){
+                        surfaces.add(mVideoSnapshotImageReader.getSurface());
+                    }
                     CaptureRequest initialRequest = mVideoRecordRequestBuilder.build();
                     int optionMode = isSSMEnabled() ? STREAM_CONFIG_SSM : SESSION_HIGH_SPEED;
                     buildConstrainedCameraSession(mCameraDevice[cameraId], optionMode,
@@ -2079,6 +2085,9 @@ public class CaptureModule implements CameraModule, PhotoController,
                 }
             } else {
                 if (isHighSpeedRateCapture()) {
+                    if (mSettingsManager.isHFRLiveshotSupported()){
+                        surfaces.add(mVideoSnapshotImageReader.getSurface());
+                    }
                     mCameraDevice[cameraId].createConstrainedHighSpeedCaptureSession(surfaces, new
                             CameraConstrainedHighSpeedCaptureSession.StateCallback() {
 
@@ -5408,7 +5417,12 @@ public class CaptureModule implements CameraModule, PhotoController,
                     mRecordingTotalTime = 0L;
                     mRecordingStartTime = SystemClock.uptimeMillis();
                     if (isHighSpeedRateCapture()) {
-                        mUI.enableShutter(false);
+                        if (mSettingsManager.isHFRLiveshotSupported()){
+                            mUI.enableShutter(true);
+                        } else {
+                            mUI.enableShutter(false);
+                        }
+
                     }
                     mUI.showRecordingUI(true, false);
                     updateRecordingTime();
