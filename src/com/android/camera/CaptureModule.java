@@ -941,7 +941,6 @@ public class CaptureModule implements CameraModule, PhotoController,
                                        CaptureRequest request,
                                        TotalCaptureResult result) {
             int id = (int) result.getRequest().getTag();
-
             if (id == getMainCameraId()) {
                 updateFocusStateChange(result);
                 updateAWBCCTAndgains(result);
@@ -970,6 +969,9 @@ public class CaptureModule implements CameraModule, PhotoController,
             } else {
                 mUI.updateAWBInfoVisibility(View.GONE);
                 mUI.updateAECInfoVisibility(View.GONE);
+                updateGraghViewVisibility(View.GONE);
+                updateBGStatsVisibility(View.GONE);
+                updateBEStatsVisibility(View.GONE);
             }
         }
     };
