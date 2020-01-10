@@ -136,6 +136,8 @@ public class PersistUtil {
             SystemProperties.getInt("persist.sys.camera.burst.preview.nums", 0);
     private static final boolean PERSIST_SSM_ENABLE =
             SystemProperties.getBoolean("persist.sys.camera.ssm.enable", false);
+    private static final boolean PERSIST_TRACE_ENABLE =
+            SystemProperties.getBoolean("persist.sys.camera.trace",false);
 
     public static int getMemoryLimit() {
         return PERSIST_MEMORY_LIMIT;
@@ -353,4 +355,7 @@ public class PersistUtil {
     public static boolean isSSMEnabled() {
         return PERSIST_SSM_ENABLE;
     }
+
+    public static boolean isTraceEnable() {return PERSIST_TRACE_ENABLE;};
+
 }
