@@ -2662,6 +2662,9 @@ public class SettingsManager implements ListMenu.SettingsListener {
     }
 
     public boolean isLiveshotSupported(Size videoSize, int fps){
+        if( CaptureModule.CURRENT_MODE == CaptureModule.CameraMode.HFR){
+            return false;
+        }
         if (PersistUtil.isPersistVideoLiveshot())
             return true;
         SettingsManager.VideoEisConfig config =
