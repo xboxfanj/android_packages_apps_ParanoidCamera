@@ -76,7 +76,6 @@ import android.os.Looper;
 import android.os.Message;
 import android.os.ParcelFileDescriptor;
 import android.os.SystemClock;
-import android.os.SystemProperties;
 import android.os.Trace;
 import android.provider.MediaStore;
 import android.provider.Settings;
@@ -949,10 +948,12 @@ public class CaptureModule implements CameraModule, PhotoController,
                 Face[] faces = partialResult.get(CaptureResult.STATISTICS_FACES);
                 if (BSGC_DEBUG)
                     Log.d(BSGC_TAG,"onCaptureProgressed Detected Face size = " + Integer.toString(faces == null? 0 : faces.length));
-                if (faces != null && (isBsgcDetecionOn() || isFacialContourOn() || isFacePointOn())) {
-                    updateFaceView(faces, getBsgcInfo(partialResult, faces.length));
-                } else {
-                    updateFaceView(faces, null);
+                if (faces != null && mSettingsManager.isFDRenderingAtPreview()){
+                    if (isBsgcDetecionOn() || isFacialContourOn() || isFacePointOn()){
+                        updateFaceView(faces, getBsgcInfo(partialResult, faces.length));
+                    } else {
+                        updateFaceView(faces, null);
+                    }
                 }
             }
         }
@@ -969,10 +970,12 @@ public class CaptureModule implements CameraModule, PhotoController,
                 Face[] faces = result.get(CaptureResult.STATISTICS_FACES);
                 if (BSGC_DEBUG)
                     Log.d(BSGC_TAG,"onCaptureCompleted Detected Face size = " + Integer.toString(faces == null? 0 : faces.length));
-                if (faces != null && (isBsgcDetecionOn() || isFacialContourOn() || isFacePointOn())) {
-                    updateFaceView(faces, getBsgcInfo(result, faces.length));
-                } else {
-                    updateFaceView(faces, null);
+                if (faces != null && mSettingsManager.isFDRenderingAtPreview()){
+                    if (isBsgcDetecionOn() || isFacialContourOn() || isFacePointOn()){
+                        updateFaceView(faces, getBsgcInfo(result, faces.length));
+                    } else {
+                        updateFaceView(faces, null);
+                    }
                 }
                 updateT2tTrackerView(result);
             }
@@ -8129,7 +8132,9 @@ public class CaptureModule implements CameraModule, PhotoController,
         mActivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if (value == null || value.equals("off")) mUI.onStopFaceDetection();
+                if (value == null || value.equals("off")
+                        || !mSettingsManager.isFDRenderingAtPreview())
+                    mUI.onStopFaceDetection();
                 else {
                     mUI.onStartFaceDetection(mDisplayOrientation,
                             mSettingsManager.isFacingFront(getMainCameraId()),
