@@ -2880,6 +2880,7 @@ public class CaptureModule implements CameraModule, PhotoController,
                                             CaptureRequest request,
                                             CaptureFailure result) {
                     Log.d(TAG, "captureStillPictureForCommon onCaptureFailed: " + id);
+                    enableShutterAndVideoOnUiThread(id);
                 }
 
                 @Override
