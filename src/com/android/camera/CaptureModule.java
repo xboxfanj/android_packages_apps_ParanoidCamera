@@ -2130,6 +2130,7 @@ public class CaptureModule implements CameraModule, PhotoController,
         mActivity = activity;
         mRootView = parent;
         mSettingsManager = SettingsManager.getInstance();
+        mSettingsManager.createCaptureModule(this);
         mSettingsManager.registerListener(this);
         mSettingsManager.init();
         mFirstPreviewLoaded = false;
@@ -2158,6 +2159,10 @@ public class CaptureModule implements CameraModule, PhotoController,
 
         mFocusStateListener = new FocusStateListener(mUI);
         mLocationManager = new LocationManager(mActivity, this);
+    }
+
+    public void restoreCameraIds(){
+        CURRENT_ID = mCurrentSceneMode.getCurrentId();
     }
 
     private void initCameraIds() {
@@ -4123,6 +4128,7 @@ public class CaptureModule implements CameraModule, PhotoController,
         }
         mSettingsManager.unregisterListener(this);
         mSettingsManager.unregisterListener(mUI);
+        mSettingsManager.destroyCaptureModule();
     }
 
     @Override
