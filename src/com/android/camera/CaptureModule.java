@@ -898,6 +898,9 @@ public class CaptureModule implements CameraModule, PhotoController,
                 updateT2tTrackerView(result);
             }
 
+            if (mPaused) {
+                return;
+            }
             detectHDRMode(result, id);
             processCaptureResult(result);
             mPostProcessor.onMetaAvailable(result);
