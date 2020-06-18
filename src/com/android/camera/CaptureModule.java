@@ -3383,6 +3383,10 @@ public class CaptureModule implements CameraModule, PhotoController,
     public void unlockFocus(int id) {
         Log.d(TAG, "unlockFocus " + id);
         isFlashRequiredInDriver = false;
+        if ((mCurrentSceneMode.mode == CameraMode.HFR) && isHighSpeedRateCapture()) {
+            Log.d(TAG, "unlockFocus should not be triggered in HFR");
+            return;
+        }
         if (!checkSessionAndBuilder(mCaptureSession[id], mPreviewRequestBuilder[id])) {
             return;
         }
@@ -6167,6 +6171,9 @@ public class CaptureModule implements CameraModule, PhotoController,
                     captureVideoSnapshot(getMainCameraId());
                 }
             }
+            return;
+        }
+        if (!mUI.isShutterEnabled()) {
             return;
         }
 
