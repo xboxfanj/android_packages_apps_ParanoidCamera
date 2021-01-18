@@ -4685,7 +4685,7 @@ public class CaptureModule implements CameraModule, PhotoController,
             mUI.clearFocus();
             mUI.hideUIwhileRecording();
             mCameraHandler.removeMessages(CANCEL_TOUCH_FOCUS, mCameraId[cameraId]);
-            if (isAbortCapturesEnable() && mCaptureSession[cameraId] != null) {
+            if (isAbortCapturesEnable()) {
                 mCaptureSession[cameraId].abortCaptures();
                 Log.d(TAG, "startRecordingVideo call abortCaptures befor close preview ");
             }
@@ -5323,7 +5323,7 @@ public class CaptureModule implements CameraModule, PhotoController,
             mLiveShotInitHeifWriter.close();
         }
         mIsRecordingVideo = false;
-        if (isEISDisable() && isAbortCapturesEnable() && mCurrentSession != null) {
+        if (isEISDisable() && isAbortCapturesEnable()) {
             try {
                 if (mCurrentSession != null) {
                     mCurrentSession.abortCaptures();
