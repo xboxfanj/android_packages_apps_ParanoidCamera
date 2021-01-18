@@ -3567,17 +3567,8 @@ public class CaptureModule implements CameraModule, PhotoController,
         try {
             applySettingsForLockExposure(mPreviewRequestBuilder[id], id);
             mState[id] = STATE_WAITING_AE_LOCK;
-            if (isHighSpeedRateCapture()) {
-                List<CaptureRequest> slowMoRequests = mSuperSlomoCapture ?
-                        createSSMBatchRequest(mVideoRecordRequestBuilder) :
-                        ((CameraConstrainedHighSpeedCaptureSession) mCurrentSession).
-                                createHighSpeedRequestList(mVideoRecordRequestBuilder.build());
-                mCaptureSession[id].setRepeatingBurst(slowMoRequests, mCaptureCallback,
-                        mCameraHandler);
-            } else {
-                mCaptureSession[id].setRepeatingRequest(mPreviewRequestBuilder[id].build(),
-                        mCaptureCallback, mCameraHandler);
-            }
+            mCaptureSession[id].setRepeatingRequest(mPreviewRequestBuilder[id].build(),
+                    mCaptureCallback, mCameraHandler);
         } catch (CameraAccessException | IllegalStateException e) {
             e.printStackTrace();
         }
