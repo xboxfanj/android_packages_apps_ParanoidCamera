@@ -37,7 +37,6 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.ImageFormat;
 import android.media.audiofx.PresetReverb;
-import android.Manifest;
 import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.MultiSelectListPreference;
@@ -78,8 +77,6 @@ public class SettingsActivity extends PreferenceActivity {
     private static final boolean DEV_LEVEL_ALL =
             PersistUtil.getDevOptionLevel() == PersistUtil.CAMERA2_DEV_OPTION_ALL;
     public static final String CAMERA_MODULE = "camera_module";
-    /** Permission request code */
-    private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
     private SettingsManager mSettingsManager;
     private SharedPreferences mSharedPreferences;
     private SharedPreferences mLocalSharedPref;
@@ -99,9 +96,6 @@ public class SettingsActivity extends PreferenceActivity {
                 boolean checked = ((SwitchPreference) p).isChecked();
                 value = checked ? "on" : "off";
                 mSettingsManager.setValue(key, value);
-                if (notSame(p, SettingsManager.KEY_RECORD_LOCATION, "off")) {
-                    requestLocationPermission();
-                }
             } else if (p instanceof ListPreference){
                 value = ((ListPreference) p).getValue();
                 mSettingsManager.setValue(key, value);
@@ -1227,23 +1221,6 @@ public class SettingsActivity extends PreferenceActivity {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
-        switch (requestCode) {
-            case PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Log.v(TAG, "Location permission is granted");
-                } else {
-                    Log.w(TAG, "Location permission is denied");
-                }
-                break;
-            }
-        }
-    }
-
-    @Override
     protected void onDestroy() {
         super.onDestroy();
         mSettingsManager.unregisterListener(mListener);
@@ -1256,54 +1233,8 @@ public class SettingsActivity extends PreferenceActivity {
         params.flags |= WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED;
         win.setAttributes(params);
     }
-
-    private boolean isMultiCameraEnable() {
-        boolean result = false;
-        CameraManager manager = (CameraManager) this.getSystemService(Context.CAMERA_SERVICE);
-        String[] cameraIdList = null;
-        try {
-            cameraIdList = manager.getCameraIdList();
-        } catch (CameraAccessException e) {
-            e.printStackTrace();
-        }
-        if (cameraIdList == null || cameraIdList.length == 0) {
-            return result;
-        }
-        for (int i = 0; i < cameraIdList.length; i++) {
-            String cameraId = cameraIdList[i];
-            CameraCharacteristics characteristics;
-            try {
-                characteristics = manager.getCameraCharacteristics(cameraId);
-            } catch (CameraAccessException e) {
-                e.printStackTrace();
-                continue;
-            }
-            Set<String> physicalCameraIds = characteristics.getPhysicalCameraIds();
-            if (physicalCameraIds != null && physicalCameraIds.size() > 0) {
-                result |= true;
-            } else {
-                result |= false;
-            }
-        }
-        return result;
-    }
-
-    // Return true if the preference has the specified key but not the value.
-    private boolean notSame(Preference pref, String key, String value) {
-        return (key.equals(pref.getKey()) && !value.equals(mSettingsManager.getValue(key)));
-    }
-
-    private void requestLocationPermission() {
-        if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-            Log.v(TAG, "Request Location permission");
-            requestPermissions(
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                    PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
-        }
-    }
-
-    private void onRestoreDefaultSettingsClick() {
+    private
+    void onRestoreDefaultSettingsClick() {
         new AlertDialog.Builder(this)
                 .setMessage(R.string.pref_camera2_restore_default_hint)
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
