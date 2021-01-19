@@ -362,6 +362,8 @@ public class CaptureModule implements CameraModule, PhotoController,
             new CameraCharacteristics.Key<>("org.codeaurora.qcamera3.logicalCameraType.logical_camera_type", Byte.class);
     public static CaptureRequest.Key<Integer> support_video_hdr_values =
             new CaptureRequest.Key<>("org.codeaurora.qcamera3.available_video_hdr_modes.video_hdr_values", Integer.class);
+    public static CameraCharacteristics.Key<int[]> max_preview_size =
+            new CameraCharacteristics.Key<>("org.quic.camera.MaxPreviewSize.MaxPreviewSize", int[].class);
 
     public static CameraCharacteristics.Key<Byte> bsgcAvailable =
             new CameraCharacteristics.Key<>("org.codeaurora.qcamera3.stats.bsgc_available", Byte.class);
