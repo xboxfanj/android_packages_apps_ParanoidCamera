@@ -5918,8 +5918,6 @@ public class CaptureModule implements CameraModule, PhotoController,
                 Log.d(TAG, "stopRecordingVideo call abortCaptures ");
             } catch (CameraAccessException e) {
                 e.printStackTrace();
-            } catch (IllegalStateException e) {
-                e.printStackTrace();
             }
         }
         if (!mPaused && !isAbortCapturesEnable()) {
