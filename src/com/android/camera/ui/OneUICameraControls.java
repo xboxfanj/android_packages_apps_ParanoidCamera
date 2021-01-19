@@ -609,7 +609,6 @@ public class OneUICameraControls extends RotatableLayout {
             mProModeLayout.setVisibility(INVISIBLE);
             return;
         }
-        setProModeParameters();
         mProModeLayout.setVisibility(VISIBLE);
         mProModeLayout.setY(mHeight - mBottom - mProModeLayout.getHeight() - 48);
     }
