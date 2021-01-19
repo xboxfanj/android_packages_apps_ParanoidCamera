@@ -934,7 +934,6 @@ public class CaptureModule implements CameraModule, PhotoController,
                     updateFaceView(faces, null);
                 }
             }
-            updateCaptureStateMachine(id, partialResult);
         }
 
         @Override
